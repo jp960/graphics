@@ -18,22 +18,22 @@ using namespace std;
 
 int main()
 {
-	int resH = 256;
-	int resW = 256;
+	int resH = 512;
+	int resW = 512;
 	Scene scene(resH, resW, 0.2f, Eigen::Vector3f{ 255, 255, 255 });
 	cv::Mat image;
-	Eigen::Vector3f lightVector(1, -1, 1);
+	Eigen::Vector3f lightVector(0.5f, -0.5f, 0.5f);
 
 	lightVector = (lightVector / lightVector.norm());
 
-	Sphere sphere(Eigen::Vector3f{ 0, 1, 3 }, 1.5, Eigen::Vector3f{ 47, 231, 99 }, Eigen::Vector3f{ 255, 255, 255 });
-	Sphere sphere2(Eigen::Vector3f{ -2, 1, 6 }, 1, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 });
+	Sphere sphere(Eigen::Vector3f{ 2, 1, 5 }, 1.5, Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 0.5f, 1.0f, 1.52);
+	Sphere sphere2(Eigen::Vector3f{ -2, 1, 5 }, 1, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 0.0f, 0.0f);
 	Camera cam(Eigen::Vector3f{ 0, 0, 0 }, 1, Eigen::Vector3f{ 0, 1, 0 }, Eigen::Vector3f{ 1, 0, 0 }, Eigen::Vector3f{ 0, 0, 1 }, 2, 2, resH, resW);
-	Mesh mesh("/home/janhavi/Documents/Final Year/graphics/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1, Eigen::Vector3f{ 122, 122, 255 }, Eigen::Vector3f{ 255, 255, 255 });
+	Mesh mesh("/home/janhavi/Documents/Final Year/graphics/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1, Eigen::Vector3f{ 122, 122, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 0.0f, 0.0f);
 	Light light(lightVector, 0.4f, Eigen::Vector3f{ 255, 255, 255 });
 
 	scene.sceneObjects.push_back(&sphere);
-	//scene.sceneObjects.push_back(&sphere2);
+	scene.sceneObjects.push_back(&sphere2);
 	scene.sceneObjects.push_back(&mesh);
 	scene.sceneLights.push_back(&light);
 
@@ -51,7 +51,7 @@ int main()
 			rayPoint = cam.focal_point;
 			rayDirection = pixel - cam.focal_point;
 			rayDirection = rayDirection / rayDirection.norm();
-			pixelColour = scene.getPixelColour(rayPoint, rayDirection);
+			pixelColour = scene.rayTrace(rayPoint, rayDirection, 0);
 			sceneChannels.at(2).at<float>(i, j) = pixelColour[0];
 			sceneChannels.at(1).at<float>(i, j) = pixelColour[1];
 			sceneChannels.at(0).at<float>(i, j) = pixelColour[2];
@@ -60,6 +60,5 @@ int main()
 
 	merge(sceneChannels, image);
 	cv::imwrite("test.png", image);
-	//std::getchar();
 	return 0;
 }

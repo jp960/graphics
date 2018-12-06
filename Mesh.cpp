@@ -6,12 +6,15 @@
 
 using namespace std;
 
-Mesh::Mesh(std::string _fileName, Eigen::Vector3f _centre, float _scale, Eigen::Vector3f _diffuseColour, Eigen::Vector3f _specular) : SceneObject(_diffuseColour, _specular) {
+Mesh::Mesh(std::string _fileName, Eigen::Vector3f _centre, float _scale, Eigen::Vector3f _diffuse, Eigen::Vector3f _specular, float _reflectivity, float _transparency, float _refractiveIndex) : SceneObject(_diffuse, _specular, _reflectivity, _transparency, _refractiveIndex) {
 	fileName = _fileName;
-	diffuseColour = _diffuseColour;
+	diffuse = _diffuse;
 	specular = _specular;
 	centre = _centre;
 	scale = _scale;
+	reflectivity = _reflectivity;
+	transparency = _transparency;
+	refractiveIndex = _refractiveIndex;
 	loadMesh();
 }
 

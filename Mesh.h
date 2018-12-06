@@ -13,7 +13,7 @@ public:
 	Eigen::Vector3f centre;
 	float scale;
 
-	Mesh(std::string fileName, Eigen::Vector3f centre, float scale, Eigen::Vector3f diffuseColour, Eigen::Vector3f specular);
+	Mesh(std::string fileName, Eigen::Vector3f centre, float scale, Eigen::Vector3f diffuseColour, Eigen::Vector3f specular, float reflectivity, float transparency, float refractiveIndex);
 	~Mesh();
 	Intersection intersect(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDirection);
 private:

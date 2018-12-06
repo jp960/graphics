@@ -6,7 +6,7 @@
 class Sphere : public SceneObject {
 	using SceneObject::intersect;
 public:
-	Sphere(Eigen::Vector3f centre, int radius, Eigen::Vector3f diffuseColour, Eigen::Vector3f specular);
+	Sphere(Eigen::Vector3f centre, int radius, Eigen::Vector3f diffuse, Eigen::Vector3f specular, float reflectivity, float transparency, float refractiveIndex);
 	~Sphere();
 	Eigen::Vector3f centre;
 	int radius;

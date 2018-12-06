@@ -2,11 +2,14 @@
 #include "Sphere.h"
 
 
-Sphere::Sphere(Eigen::Vector3f _centre, int _radius, Eigen::Vector3f _diffuseColour, Eigen::Vector3f _specular) : SceneObject(_diffuseColour, _specular) {
+Sphere::Sphere(Eigen::Vector3f _centre, int _radius, Eigen::Vector3f _diffuse, Eigen::Vector3f _specular, float _reflectivity, float _transparency, float _refractiveIndex) : SceneObject(_diffuse, _specular, _reflectivity, _transparency, _refractiveIndex) {
 	centre = _centre;
 	radius = _radius;
-	diffuseColour = _diffuseColour;
+	diffuse = _diffuse;
 	specular = _specular;
+	reflectivity = _reflectivity;
+	transparency = _transparency;
+	refractiveIndex = _refractiveIndex;
 }
 
 

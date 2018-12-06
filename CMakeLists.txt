@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(graphics)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(libigl_DIR "/home/janhavi/Documents/graphicsLibraries/libigl/include")
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
@@ -17,8 +17,8 @@ set(SOURCE_FILES
         Camera.h
         Intersection.cpp
         Intersection.h
-        Light.cpp
         Light.h
+        Light.cpp
         Mesh.cpp
         Mesh.h
         Scene.cpp
