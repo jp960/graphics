@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.12)
-project(graphics)
+project(Janhavi)
 
 set(CMAKE_CXX_STANDARD 11)
-set(libigl_DIR "/home/janhavi/Documents/graphicsLibraries/libigl/include")
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
-find_package(OpenCV REQUIRED)
 
-include_directories("/home/janhavi/Documents/graphicsLibraries/libigl/include")
+find_package(OpenCV REQUIRED)
+include_directories("/usr/local/include/libigl/include")
+include_directories("/usr/local/include/eigen3/eigen3/cmake")
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -29,6 +29,6 @@ set(SOURCE_FILES
         Sphere.h
     )
 
-add_executable(graphics ${SOURCE_FILES})
-target_link_libraries (graphics Eigen3::Eigen)
-target_link_libraries(graphics ${OpenCV_LIBS})
+add_executable(Janhavi ${SOURCE_FILES})
+target_link_libraries (Janhavi Eigen3::Eigen)
+target_link_libraries(Janhavi ${OpenCV_LIBS})

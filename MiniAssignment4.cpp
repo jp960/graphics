@@ -29,7 +29,7 @@ int main()
 	Sphere sphere(Eigen::Vector3f{ 0, 1, 3 }, 1.5, Eigen::Vector3f{ 47, 231, 99 }, Eigen::Vector3f{ 255, 255, 255 });
 	Sphere sphere2(Eigen::Vector3f{ -2, 1, 6 }, 1, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 });
 	Camera cam(Eigen::Vector3f{ 0, 0, 0 }, 1, Eigen::Vector3f{ 0, 1, 0 }, Eigen::Vector3f{ 1, 0, 0 }, Eigen::Vector3f{ 0, 0, 1 }, 2, 2, resH, resW);
-	Mesh mesh("/home/janhavi/Documents/Final Year/graphics/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1, Eigen::Vector3f{ 122, 122, 255 }, Eigen::Vector3f{ 255, 255, 255 });
+	Mesh mesh("/home/donal/Documents/Graphics/Janhavi/Meshs/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1, Eigen::Vector3f{ 122, 122, 255 }, Eigen::Vector3f{ 255, 255, 255 });
 	Light light(lightVector, 0.4f, Eigen::Vector3f{ 255, 255, 255 });
 
 	scene.sceneObjects.push_back(&sphere);
