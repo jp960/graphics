@@ -6,15 +6,10 @@
 
 using namespace std;
 
-Mesh::Mesh(std::string _fileName, Eigen::Vector3f _centre, float _scale, Eigen::Vector3f _diffuse, Eigen::Vector3f _specular, float _reflectivity, float _transparency, float _refractiveIndex) : SceneObject(_diffuse, _specular, _reflectivity, _transparency, _refractiveIndex) {
+Mesh::Mesh(std::string _fileName, Eigen::Vector3f _centre, float _scale, Material _m) : SceneObject(_m) {
 	fileName = _fileName;
-	diffuse = _diffuse;
-	specular = _specular;
 	centre = _centre;
 	scale = _scale;
-	reflectivity = _reflectivity;
-	transparency = _transparency;
-	refractiveIndex = _refractiveIndex;
 	loadMesh();
 }
 
@@ -40,7 +35,7 @@ Eigen::MatrixXf Mesh::apply_transform_to_list_of_vertices(Eigen::MatrixXf input_
 	return v_homo_smol.transpose();
 }
 
-Intersection Mesh::intersect(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDirection) {
+Intersection Mesh::intersect(Ray ray) {
 	Eigen::Vector3i face;
 	Eigen::Vector3f v1, v2, v3;
 	Eigen::Vector3f v1v2, v1v3, v2v3, v3v1;
@@ -67,14 +62,14 @@ Intersection Mesh::intersect(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDirect
 		n = v1v2.cross(v1v3);
 		n = n / n.norm();
 
-		nd = n.dot(rayDirection);
+		nd = n.dot(ray.direction);
 
 		if (nd < 0) {
-			t = abs((v1 - rayPoint).dot(n) / nd);
+			t = abs((v1 - ray.point).dot(n) / nd);
 			if (t >= closest_t) {
 				continue;
 			}
-			intersection = rayPoint + (t*rayDirection);
+			intersection = ray.point + (t*ray.direction);
 
 			v2v3 = v3 - v2;
 			v3v1 = v1 - v3;

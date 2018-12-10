@@ -4,8 +4,11 @@
 #include "Mesh.h"
 #include "opencv2/core/eigen.hpp"
 #include "Intersection.h"
+#include <limits>
 
 using namespace std;
+
+const float SMALL_E = 1e-2;
 
 Scene::Scene(int _resH, int _resW, float _ambientIntensity, Eigen::Vector3f _ambientColour) {
 	resH = _resH;
@@ -35,14 +38,14 @@ std::vector<cv::Mat> Scene::setupScene() {
 	return channels;
 }
 
-bool Scene::getClosestObj(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDirection, Intersection &closestPoint) {
+bool Scene::getClosestObj(Ray ray, Intersection &closestPoint) {
 	float closest = FLT_MAX;
 	int closestObjIndex = -1;
 	float current_t;
 	Eigen::Vector3f test;
 	Intersection point;
 	for (int obj_index = 0; obj_index < sceneObjects.size(); obj_index++) {
-		point = (sceneObjects.at(obj_index)->intersect(rayPoint, rayDirection));
+		point = (sceneObjects.at(obj_index)->intersect(ray));
 		current_t = point.shortest_distance_t;
 		if (current_t > 0 && current_t < closest) {
 			closest = current_t;
@@ -57,33 +60,31 @@ bool Scene::getClosestObj(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDirection
 	return false;
 }
 
-Eigen::Vector3f Scene::rayTrace(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDirection, int depth) {
+Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 	if (depth > MAX_DEPTH) {
 		return Eigen::Vector3f{ 0, 0, 0 };
 	}
 	Intersection point;
-	if (getClosestObj(rayPoint, rayDirection, point)) {
+	if (getClosestObj(ray, point)) {
 		SceneObject* obj = sceneObjects.at(point.closestObjIndex);
-		Eigen::Vector3f objDiffuseColour(obj->diffuse);
-		Eigen::Vector3f objSpecularColour(obj->specular);
+		Eigen::Vector3f objDiffuseColour(obj->material.kd);
+		Eigen::Vector3f objSpecularColour(obj->material.ks);
 
 		Light light;
 		Eigen::Vector3f n(point.normal*-1);
 		Eigen::Vector3f lightReflection;
-		Eigen::Vector3f ray(rayDirection/rayDirection.norm());
 		float diffuseComponent;
 		float specularComponent;
 
 		Eigen::Vector3f returnColour(0, 0, 0);
-
 		for (auto &sceneLight : sceneLights) {
 			light = *sceneLight;
 			if (checkShadow(point, light)) {
 				Eigen::Vector3f l((light.direction *-1));
 				diffuseComponent = n.dot(l*-1);
 				lightReflection = l - (2.0*(l.dot(n)*n));
-				if (lightReflection.dot(ray) > 0) {
-					specularComponent = powf(lightReflection.dot(ray), 20);
+				if (lightReflection.dot(ray.direction) > 0) {
+					specularComponent = powf(lightReflection.dot(ray.direction), 20);
 					returnColour(0) = returnColour(0) + (light.local(0) * specularComponent * objSpecularColour(0));
 					returnColour(1) = returnColour(1) + (light.local(1) * specularComponent * objSpecularColour(1));
 					returnColour(2) = returnColour(2) + (light.local(2) * specularComponent * objSpecularColour(2));
@@ -102,12 +103,15 @@ Eigen::Vector3f Scene::rayTrace(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDir
 		}
 		Eigen::Vector3f refractionColour;
 		Eigen::Vector3f reflectionColour;
-		float kr = fresnel(rayDirection, point, obj->refractiveIndex);
+		float kr = fresnel(ray.direction, point, obj->material.ri);
 
 		if (kr < 1) {
-			refractionColour = rayTrace(point.intersectionPoint, refract(rayDirection, point, obj->refractiveIndex), depth+1);
+			point.intersectionPoint = point.intersectionPoint + SMALL_E * ray.direction;
+			Ray refractionRay(point.intersectionPoint, refract(ray.direction, point, obj->material.ri));
+			refractionColour = rayTrace(refractionRay, depth+1);
 		}
-		reflectionColour = obj->reflectivity * rayTrace(point.intersectionPoint, reflect(rayDirection, point), depth+1);
+		Ray reflectionRay(point.intersectionPoint, reflect(ray.direction, point));
+		reflectionColour = obj->material.kr * rayTrace(reflectionRay, depth+1);
 		returnColour += reflectionColour * kr + refractionColour * (1 - kr);
 		return returnColour;
 	}
@@ -121,7 +125,8 @@ bool Scene::checkShadow(Intersection point, Light light) {
 	float current_t;
 	
 	for (int obj_index = 0; obj_index < sceneObjects.size(); obj_index++) {
-		returnedPoint = (sceneObjects.at(obj_index)->intersect(point.intersectionPoint, (light.direction * -1)));
+		Ray shadowRay(point.intersectionPoint, (light.direction * -1));
+		returnedPoint = (sceneObjects.at(obj_index)->intersect(shadowRay));
 		current_t = returnedPoint.shortest_distance_t;
 		if (current_t < closest && obj_index != point.closestObjIndex && current_t > 0.0002) {
 			return false;
@@ -139,11 +144,13 @@ Eigen::Vector3f Scene::reflect(Eigen::Vector3f ray, Intersection point) {
 
 Eigen::Vector3f Scene::refract(Eigen::Vector3f ray, Intersection point, float ri)
 {
+	ray = ray/ray.norm();
+//	Eigen::Vector3f n = point.normal/point.normal.norm();
+	Eigen::Vector3f n = point.normal;
 	float cosi = ray.dot(point.normal);
 	if (cosi > 1) cosi = 1.0f;
 	if (cosi < -1) cosi = -1.0f;
 	float etai = 1, etat = ri;
-	Eigen::Vector3f n = point.normal;
 	if (cosi < 0) { cosi = -cosi; } else { std::swap(etai, etat); n= -point.normal; }
 	float eta = etai / etat;
 	float k = 1 - eta * eta * (1 - cosi * cosi);

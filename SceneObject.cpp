@@ -2,9 +2,9 @@
 #include <Eigen/Core>
 
 
-SceneObject::SceneObject(Eigen::Vector3f _diffuse, Eigen::Vector3f _specular, float reflectivity, float transparency, float refractiveIndex) {
-	diffuse = _diffuse * 0.5f;
-	specular = _specular * 0.5f;
+SceneObject::SceneObject(Material _m) {
+	material.kd = _m.kd * 0.5f;
+	material.ks = _m.ks * 0.5f;
 }
 
 

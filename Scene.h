@@ -4,6 +4,7 @@
 #include <Eigen/Core>
 #include "SceneObject.h"
 #include "Light.h"
+#include "Ray.h"
 #include "Intersection.h"
 
 class Scene {
@@ -17,8 +18,8 @@ public:
 	Scene(int resH, int resW, float _ambientIntensity, Eigen::Vector3f _ambientColour);
 	~Scene();
 	std::vector<cv::Mat> setupScene(void);
-	bool getClosestObj(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDirection, Intersection &closestPoint);
-	Eigen::Vector3f rayTrace(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDirection, int depth);
+	bool getClosestObj(Ray ray, Intersection &closestPoint);
+	Eigen::Vector3f rayTrace(Ray ray, int depth);
 	bool checkShadow(Intersection point, Light light);
 	Eigen::Vector3f reflect(Eigen::Vector3f ray, Intersection point);
 	Eigen::Vector3f refract(Eigen::Vector3f ray, Intersection point, float ri);

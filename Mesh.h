@@ -13,9 +13,9 @@ public:
 	Eigen::Vector3f centre;
 	float scale;
 
-	Mesh(std::string fileName, Eigen::Vector3f centre, float scale, Eigen::Vector3f diffuseColour, Eigen::Vector3f specular, float reflectivity, float transparency, float refractiveIndex);
+	Mesh(std::string fileName, Eigen::Vector3f centre, float scale, Material m);
 	~Mesh();
-	Intersection intersect(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDirection);
+	Intersection intersect(Ray ray);
 private:
 	void loadMesh();
 	Eigen::MatrixXf apply_transform_to_list_of_vertices(Eigen::MatrixXf input_v, const Eigen::Transform <float, 3, Eigen::Affine > & t);
