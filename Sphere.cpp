@@ -2,7 +2,7 @@
 #include "Sphere.h"
 
 
-Sphere::Sphere(Eigen::Vector3f _centre, int _radius, Material _m) : SceneObject(_m) {
+Sphere::Sphere(Eigen::Vector3f _centre, int _radius) : SceneObject() {
 	centre = _centre;
 	radius = _radius;
 }

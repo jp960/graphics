@@ -13,7 +13,7 @@ public:
 	Eigen::Vector3f ambient;
 	std::vector<SceneObject*> sceneObjects;
 	std::vector<Light*> sceneLights;
-	int MAX_DEPTH = 2;
+	int MAX_DEPTH = 4;
 
 	Scene(int resH, int resW, float _ambientIntensity, Eigen::Vector3f _ambientColour);
 	~Scene();
@@ -23,5 +23,5 @@ public:
 	bool checkShadow(Intersection point, Light light);
 	Eigen::Vector3f reflect(Eigen::Vector3f ray, Intersection point);
 	Eigen::Vector3f refract(Eigen::Vector3f ray, Intersection point, float ri);
-    float fresnel(const Eigen::Vector3f ray, Intersection point, float ri);
+    void fresnel(const Eigen::Vector3f ray, Intersection point, float ri, float &kr, float &kt);
 };

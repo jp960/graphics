@@ -4,9 +4,10 @@
 #include "SceneObject.h"
 
 class Sphere : public SceneObject {
-	using SceneObject::intersect;
 public:
-	Sphere(Eigen::Vector3f centre, int radius, Material m);
+	using SceneObject::intersect;
+	using SceneObject::setMaterial;
+	Sphere(Eigen::Vector3f centre, int radius);
 	~Sphere();
 	Eigen::Vector3f centre;
 	int radius;

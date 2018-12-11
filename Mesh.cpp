@@ -6,7 +6,7 @@
 
 using namespace std;
 
-Mesh::Mesh(std::string _fileName, Eigen::Vector3f _centre, float _scale, Material _m) : SceneObject(_m) {
+Mesh::Mesh(std::string _fileName, Eigen::Vector3f _centre, float _scale) : SceneObject() {
 	fileName = _fileName;
 	centre = _centre;
 	scale = _scale;

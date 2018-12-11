@@ -29,7 +29,9 @@ set(SOURCE_FILES
         SceneObject.h
         Sphere.cpp
         Sphere.h
-        Material.cpp Material.h)
+        Material.cpp
+        Material.h
+        )
 
 add_executable(Janhavi ${SOURCE_FILES})
 target_link_libraries (Janhavi Eigen3::Eigen)
