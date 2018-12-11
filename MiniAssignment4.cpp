@@ -28,28 +28,31 @@ int main()
 
 	lightVector = (lightVector / lightVector.norm());
 
-	Material shinySpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 0.0f, 0);
-	Material glassSpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 1.0f, 0);
+	Material shinySpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 0.0f, 1);
+	Material glassSpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 1.0f, 2);
 	Material behindSpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 1.0f, 0);
 	Material planem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 122, 122, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 1.0f, 0);
 
-	glassSpherem.ri = 1.52f;
-	Sphere glassSphere(Eigen::Vector3f{ 0, 1, 5 }, 1.5);
+	glassSpherem.ri = 1.2f;
+	Sphere glassSphere(Eigen::Vector3f{ 0, 0, 4 }, 1);
 	Sphere shinySphere(Eigen::Vector3f{ -2, 1, 5 }, 1);
 //	Sphere shinySphere(Eigen::Vector3f{ 0, 1, 5 }, 1);
-//	shinySphere.setMaterial(shinySpherem);
+	Sphere behindSphere(Eigen::Vector3f{ -1, -1, 8 }, 1);
+	shinySphere.setMaterial(shinySpherem);
 	glassSphere.setMaterial(glassSpherem);
-	Sphere behindSphere(Eigen::Vector3f{ -1, 1, 8 }, 1);
 	behindSphere.setMaterial(behindSpherem);
 	Camera cam(Eigen::Vector3f{ 0, 0, 0 }, 1, Eigen::Vector3f{ 0, 1, 0 }, Eigen::Vector3f{ 1, 0, 0 }, Eigen::Vector3f{ 0, 0, 1 }, 2, 2, resH, resW);
 	Mesh plane("//home/donal/Documents/Graphics/Janhavi/Meshs/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1);
+	Mesh cube("//home/donal/Documents/Graphics/Janhavi/Meshs/cube-tri.obj", Eigen::Vector3f{ 0, 1, 8 }, 1);
 	plane.setMaterial(planem);
+	cube.setMaterial(behindSpherem);
 	Light light(lightVector, 0.4f, Eigen::Vector3f{ 255, 255, 255 });
 
 	scene.sceneObjects.push_back(&glassSphere);
 	scene.sceneObjects.push_back(&shinySphere);
-	scene.sceneObjects.push_back(&behindSphere);
+//	scene.sceneObjects.push_back(&behindSphere);
 	scene.sceneObjects.push_back(&plane);
+	scene.sceneObjects.push_back(&cube);
 	scene.sceneLights.push_back(&light);
 
 	std::vector<cv::Mat> sceneChannels(scene.setupScene());
