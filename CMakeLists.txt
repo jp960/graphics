@@ -17,17 +17,19 @@ set(SOURCE_FILES
         Camera.h
         Intersection.cpp
         Intersection.h
-        Light.cpp
         Light.h
+        Light.cpp
         Mesh.cpp
         Mesh.h
+        Ray.cpp
+        Ray.h
         Scene.cpp
         Scene.h
         SceneObject.cpp
         SceneObject.h
         Sphere.cpp
         Sphere.h
-    )
+        Material.cpp Material.h)
 
 add_executable(Janhavi ${SOURCE_FILES})
 target_link_libraries (Janhavi Eigen3::Eigen)

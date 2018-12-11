@@ -1,14 +1,15 @@
 #pragma once
 #include <Eigen/Core>
 #include "Intersection.h"
+#include "Ray.h"
+#include "Material.h"
 
 class SceneObject
 {
 public:
-	Eigen::Vector3f diffuseColour;
-	Eigen::Vector3f specular;
-	SceneObject(Eigen::Vector3f diffuseColour, Eigen::Vector3f specular);
+	Material material;
+	SceneObject(Material m);
 	~SceneObject();
-	virtual Intersection intersect(Eigen::Vector3f rayPoint, Eigen::Vector3f rayDirection) = 0;
+	virtual Intersection intersect(Ray ray) = 0;
 };
 
