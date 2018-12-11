@@ -174,12 +174,10 @@ Eigen::Vector3f Scene::refract(Eigen::Vector3f ray, Intersection point, float ri
 	float cost = 1 - n1n2 * n1n2 * (1 - cosi * cosi);
 
 	if (cost < 0) {
-		cout << "test failed" << endl;
 	    return Eigen::Vector3f{ 0, 0, 0 };
 	}
 	else {
 		Eigen::Vector3f test(n1n2 * ray - n * (sqrtf(cost) - n1n2 * cosi));
-//		cout << "before: " << ray << endl << "after: " << test << endl << endl;
         return test;
 	}
 }
