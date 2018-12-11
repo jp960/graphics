@@ -125,11 +125,13 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 
 			if (kr <1 ){
 				Ray refractionRay(point.intersectionPoint, refract(ray.direction, point, obj->material.ri));
-				refractionRay.point = point.intersectionPoint + SMALL_E * ray.direction;
+				refractionRay.point = point.intersectionPoint + SMALL_E * refractionRay.direction;
 				refractionColour = rayTrace(refractionRay, depth + 1);
 			}
 			Ray reflectionRay(point.intersectionPoint, reflect(ray.direction, point));
+			reflectionRay.point = point.intersectionPoint + SMALL_E * reflectionRay.direction;
 			reflectionColour = rayTrace(reflectionRay, depth + 1);
+//			cout << "kr: " << kr << endl << "reflection colour:" << endl << reflectionColour << endl << endl;
 			returnColour += reflectionColour * kr + refractionColour * (1 - kr);
 
 			return returnColour;
