@@ -116,22 +116,20 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 		}
 		else {
 			float kr, kt;
+			refractionColour= {0.0f, 0.0f, 0.0f};
+			reflectionColour= {0.0f, 0.0f, 0.0f};
+			fresnel(ray.direction, point, obj->material.ri, kr, kt);
 
-			Ray reflectionRay(point.intersectionPoint, reflect(ray.direction, point));
-			reflectionColour = obj->material.kr * rayTrace(reflectionRay, depth + 1);
 
-			if (obj->material.kt != 0.0f) {
-				fresnel(ray.direction, point, obj->material.ri, kr, kt);
+			if (kr <1 ){
 				Ray refractionRay(point.intersectionPoint, refract(ray.direction, point, obj->material.ri));
 				refractionRay.point = point.intersectionPoint + SMALL_E * ray.direction;
-				refractionRay.direction.norm();
 				refractionColour = rayTrace(refractionRay, depth + 1);
-//			returnColour += obj->material.kt * refractionColour;
-				returnColour += reflectionColour * kr + refractionColour * (1 - kr);
 			}
-			else {
-				returnColour += obj->material.kr * reflectionColour;
-			}
+			Ray reflectionRay(point.intersectionPoint, reflect(ray.direction, point));
+			reflectionColour = obj->material.kr * rayTrace(reflectionRay, depth + 1);
+			returnColour += reflectionColour * kr + refractionColour * (1 - kr);
+
 			return returnColour;
 		}
 	}
