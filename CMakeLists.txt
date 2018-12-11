@@ -29,7 +29,9 @@ set(SOURCE_FILES
         SceneObject.h
         Sphere.cpp
         Sphere.h
-        Material.cpp Material.h)
+        Material.cpp
+        Material.h
+        )
 
 add_executable(graphics ${SOURCE_FILES})
 target_link_libraries (graphics Eigen3::Eigen)

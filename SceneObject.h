@@ -8,8 +8,9 @@ class SceneObject
 {
 public:
 	Material material;
-	SceneObject(Material m);
+	SceneObject();
 	~SceneObject();
 	virtual Intersection intersect(Ray ray) = 0;
+	void setMaterial(Material m);
 };
 

@@ -103,16 +103,23 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 		}
 		Eigen::Vector3f refractionColour;
 		Eigen::Vector3f reflectionColour;
-		float kr = fresnel(ray.direction, point, obj->material.ri);
+		float kr, kt;
 
-		if (kr < 1) {
-			point.intersectionPoint = point.intersectionPoint + SMALL_E * ray.direction;
-			Ray refractionRay(point.intersectionPoint, refract(ray.direction, point, obj->material.ri));
-			refractionColour = rayTrace(refractionRay, depth+1);
-		}
 		Ray reflectionRay(point.intersectionPoint, reflect(ray.direction, point));
 		reflectionColour = obj->material.kr * rayTrace(reflectionRay, depth+1);
-		returnColour += reflectionColour * kr + refractionColour * (1 - kr);
+
+		if (obj->material.kt != 0.0f) {
+			fresnel(ray.direction, point, obj->material.ri, kr, kt);
+			Ray refractionRay(point.intersectionPoint, refract(ray.direction, point, obj->material.ri));
+			refractionRay.point = point.intersectionPoint + SMALL_E * ray.direction;
+			refractionRay.direction.norm();
+			refractionColour = rayTrace(refractionRay, depth+1);
+//			returnColour += obj->material.kt * refractionColour;
+			returnColour += reflectionColour * kr + refractionColour * (1 - kr);
+		}
+		else {
+			returnColour += obj->material.kr * reflectionColour;
+		}
 		return returnColour;
 	}
 	return Eigen::Vector3f{ 0, 0, 0 };
@@ -144,47 +151,50 @@ Eigen::Vector3f Scene::reflect(Eigen::Vector3f ray, Intersection point) {
 
 Eigen::Vector3f Scene::refract(Eigen::Vector3f ray, Intersection point, float ri)
 {
-	ray = ray/ray.norm();
-//	Eigen::Vector3f n = point.normal/point.normal.norm();
+	float n1 = 1, n2 = ri;
 	Eigen::Vector3f n = point.normal;
 	float cosi = ray.dot(point.normal);
 	if (cosi > 1) cosi = 1.0f;
 	if (cosi < -1) cosi = -1.0f;
-	float etai = 1, etat = ri;
-	if (cosi < 0) { cosi = -cosi; } else { std::swap(etai, etat); n= -point.normal; }
-	float eta = etai / etat;
-	float k = 1 - eta * eta * (1 - cosi * cosi);
+	if (cosi < 0) { cosi = -cosi; } else { std::swap(n1, n2); n= -point.normal; }
+	float n1n2 = n1 / n2;
+	float cost = 1 - n1n2 * n1n2 * (1 - cosi * cosi);
 
-	if (k < 0) {
+	if (cost < 0) {
+		cout << "test failed" << endl;
 	    return Eigen::Vector3f{ 0, 0, 0 };
 	}
 	else {
-        eta * ray + (eta * cosi - sqrtf(k)) * n;
+		Eigen::Vector3f test(n1n2 * ray - n * (sqrtf(cost) - n1n2 * cosi));
+//		cout << "before: " << ray << endl << "after: " << test << endl << endl;
+        return test;
 	}
 }
 
-float Scene::fresnel(const Eigen::Vector3f ray, Intersection point, float ri)
+void Scene::fresnel(const Eigen::Vector3f ray, Intersection point, float ri, float &kr, float &kt)
 {
-	float kr;
 	float cosi = ray.dot(point.normal);
 	if (cosi > 1) cosi = 1.0f;
 	if (cosi < -1) cosi = -1.0f;
-	float etai = 1, etat = ri;
-	if (cosi > 0) { std::swap(etai, etat); }
-	// Compute sini using Snell's law
-	float sint = etai / etat * sqrtf(std::max(0.f, 1 - cosi * cosi));
+	float n1 = 1, n2 = ri;
+	if (cosi > 0) { std::swap(n1, n2); }
+	float n1n2 = n1 / n2;
+	float k = 1 - n1n2 * n1n2 * (1 - cosi * cosi);
+
 	// Total internal reflection
-	if (sint >= 1) {
+	if (k < 0) {
 		kr = 1;
 	}
 	else {
-		float cost = sqrtf(std::max(0.f, 1 - sint * sint));
+		float cost = sqrtf(k);
 		cosi = fabsf(cosi);
-		float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
-		float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
-		kr = (Rs * Rs + Rp * Rp) / 2;
+
+		float Rs = ((n1n2 * cosi) - cost) / ((n1n2 * cosi) + cost);
+		float Rp = (cosi - (n1n2 * cost)) / (cosi + (n1n2 * cost));
+
+		kr = ((Rs * Rs) + (Rp * Rp)) / 2;
 	}
-	return kr;
+
 	// As a consequence of the conservation of energy, transmittance is given by:
-	// kt = 1 - kr;
+	 kt = 1 - kr;
 }

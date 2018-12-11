@@ -28,22 +28,28 @@ int main()
 
 	lightVector = (lightVector / lightVector.norm());
 
-	Material m1(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 0.0f, 1.0f);
-	Material m2(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 0.0f);
-	Material m3(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 0.0f, 0.0f);
-	Material planem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 122, 122, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 0.0f);
+	Material shinySpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 0.0f);
 
-	m1.ri = 1.52f;
-	Sphere sphere(Eigen::Vector3f{ 2, 1, 5 }, 1.5, m1);
-	Sphere sphere2(Eigen::Vector3f{ -2, 1, 5 }, 1, m2);
-	Sphere sphere3(Eigen::Vector3f{ 2, 1, 8 }, 1, m3);
+	Material glassSpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 0.0f, 0.0f);
+	Material behindSpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 0.0f, 0.0f);
+	Material planem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 122, 122, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 0.0f, 0.0f);
+
+	glassSpherem.ri = 1.52f;
+	Sphere glassSphere(Eigen::Vector3f{ 0, 1, 5 }, 1.5);
+//	Sphere shinySphere(Eigen::Vector3f{ -2, 1, 5 }, 1);
+//	Sphere shinySphere(Eigen::Vector3f{ 0, 1, 5 }, 1);
+//	shinySphere.setMaterial(shinySpherem);
+	glassSphere.setMaterial(glassSpherem);
+	Sphere behindSphere(Eigen::Vector3f{ -1, 1, 8 }, 1);
+	behindSphere.setMaterial(behindSpherem);
 	Camera cam(Eigen::Vector3f{ 0, 0, 0 }, 1, Eigen::Vector3f{ 0, 1, 0 }, Eigen::Vector3f{ 1, 0, 0 }, Eigen::Vector3f{ 0, 0, 1 }, 2, 2, resH, resW);
-	Mesh plane("/home/janhavi/Documents/Final Year/graphics/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1, planem);
+	Mesh plane("/home/janhavi/Documents/Final Year/graphics/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1);
+	plane.setMaterial(planem);
 	Light light(lightVector, 0.4f, Eigen::Vector3f{ 255, 255, 255 });
 
-	scene.sceneObjects.push_back(&sphere);
-	scene.sceneObjects.push_back(&sphere2);
-	scene.sceneObjects.push_back(&sphere3);
+	scene.sceneObjects.push_back(&glassSphere);
+//	scene.sceneObjects.push_back(&shinySphere);
+	scene.sceneObjects.push_back(&behindSphere);
 	scene.sceneObjects.push_back(&plane);
 	scene.sceneLights.push_back(&light);
 

@@ -5,15 +5,16 @@
 #include <string>
 
 class Mesh : public SceneObject {
-	using SceneObject::intersect;
 public:
+	using SceneObject::intersect;
+	using SceneObject::setMaterial;
 	Eigen::MatrixXf v;
 	Eigen::MatrixXi f;
 	std::string fileName;
 	Eigen::Vector3f centre;
 	float scale;
 
-	Mesh(std::string fileName, Eigen::Vector3f centre, float scale, Material m);
+	Mesh(std::string fileName, Eigen::Vector3f centre, float scale);
 	~Mesh();
 	Intersection intersect(Ray ray);
 private:
