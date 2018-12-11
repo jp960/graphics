@@ -95,7 +95,6 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 					else {
 						specularComponent = 0;
 					}
-
 					if (diffuseComponent >= 0) {
 						returnColour(0) = returnColour(0) + (light.local(0) * diffuseComponent * objDiffuseColour(0));
 						returnColour(1) = returnColour(1) + (light.local(1) * diffuseComponent * objDiffuseColour(1));
@@ -103,6 +102,7 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 					}
 				}
 				returnColour += ambient;
+
 			}
 			return returnColour;
 		}
@@ -111,8 +111,8 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 			Ray reflectionRay(point.intersectionPoint, reflect(ray.direction, point));
 			reflectionColour = obj->material.kr * rayTrace(reflectionRay, depth+1);
 			returnColour += obj->material.kr * reflectionColour;
+			returnColour += ambient;
 			return returnColour;
-
 		}
 		else {
 			float kr, kt;
@@ -123,12 +123,13 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 
 			if (kr <1 ){
 				Ray refractionRay(point.intersectionPoint, refract(ray.direction, point, obj->material.ri));
-				refractionRay.point = point.intersectionPoint + SMALL_E * ray.direction;
+				refractionRay.point = point.intersectionPoint + SMALL_E * refractionRay.direction;
 				refractionColour = rayTrace(refractionRay, depth + 1);
 			}
 			Ray reflectionRay(point.intersectionPoint, reflect(ray.direction, point));
-			reflectionColour = obj->material.kr * rayTrace(reflectionRay, depth + 1);
-			returnColour += reflectionColour * kr + refractionColour * (1 - kr);
+			reflectionRay.point = point.intersectionPoint + SMALL_E * reflectionRay.direction;
+			reflectionColour = rayTrace(reflectionRay, depth + 1);
+			returnColour += reflectionColour * obj->material.kr * kr + refractionColour * (1 - kr);
 
 			return returnColour;
 		}
@@ -175,7 +176,7 @@ Eigen::Vector3f Scene::refract(Eigen::Vector3f ray, Intersection point, float ri
 	    return Eigen::Vector3f{ 0, 0, 0 };
 	}
 	else {
-		Eigen::Vector3f test(n1n2 * ray - n * (sqrtf(cost) - n1n2 * cosi));
+		Eigen::Vector3f test(n1n2 * ray + n * (sqrtf(cost) - n1n2 * cosi));
         return test;
 	}
 }

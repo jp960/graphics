@@ -21,6 +21,8 @@ set(SOURCE_FILES
         Light.cpp
         Mesh.cpp
         Mesh.h
+        PerlinNoise.cpp
+        PerlinNoise.h
         Ray.cpp
         Ray.h
         Scene.cpp
