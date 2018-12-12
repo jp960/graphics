@@ -20,8 +20,8 @@ using namespace std;
 
 int main()
 {
-	int resH = 512;
-	int resW = 512;
+	int resH = 256;
+	int resW = 256;
 	Scene scene(resH, resW, 0.2f, Eigen::Vector3f{ 255, 255, 255 });
 	cv::Mat image;
 	Eigen::Vector3f lightVector(0.5f, -0.5f, 0.5f);
@@ -33,9 +33,10 @@ int main()
 	Sphere glassSphere(Eigen::Vector3f{ 2, 1, 4 }, 1);
 	Sphere shinySphere(Eigen::Vector3f{ -2, 1, 5 }, 1);
 	Sphere globe(Eigen::Vector3f{ 0, 0, 4 }, 1);
+	Sphere plainSphere(Eigen::Vector3f{ 0, 1, 4 }, 1);
 	Mesh plane("/home/janhavi/Documents/Final Year/graphics/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1);
-	Mesh cube("/home/janhavi/Documents/Final Year/graphics/cube-tri.obj", Eigen::Vector3f{ 1, 1, 8 }, 1);
-//	Mesh bunny("/home/janhavi/Documents/Final Year/graphics/bunny.obj", Eigen::Vector3f{ 0, 0, 3 }, 10);
+	Mesh cube("/home/janhavi/Documents/Final Year/graphics/cube-tri.obj", Eigen::Vector3f{ 2, 1, 8 }, 1);
+	Mesh bunny("/home/janhavi/Documents/Final Year/graphics/bunny.obj", Eigen::Vector3f{ 0, 0, 3 }, 10);
 
 	Material shinySpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 1.0f, 1);
 	Material glassSpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 1.0f, 2);
@@ -46,26 +47,36 @@ int main()
 	shinySphere.setMaterial(shinySpherem);
 	glassSphere.setMaterial(glassSpherem);
 	globe.setMaterial(simplem);
-	plane.setMaterial(planem);
+	plane.setMaterial(shinySpherem);
 	cube.setMaterial(simplem);
-//	bunny.setMaterial(simplem);
+	plainSphere.setMaterial(glassSpherem);
+	bunny.setMaterial(simplem);
 
-	Texture t;
-	t.flag = 1;
-	t.loadTexture("/home/janhavi/Documents/Final Year/graphics/earth.jpg");
+	Texture globeTexture;
+	Texture noTexture;
+	noTexture.flag = 0;
+	globeTexture.flag = 1;
+	globeTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/earth.jpg");
 
 //	cv::namedWindow("texture", CV_WINDOW_AUTOSIZE);
-//	cv::imshow("texture", t.texture);
+//	cv::imshow("texture", globeTexture.texture);
 //	cvWaitKey(0);
 
-	globe.setTexture(t);
+	glassSphere.setTexture(noTexture);
+	shinySphere.setTexture(noTexture);
+	globe.setTexture(globeTexture);
+	cube.setTexture(globeTexture);
+	plane.setTexture(globeTexture);
+	plainSphere.setTexture(noTexture);
+	bunny.setTexture(globeTexture);
 
 //	scene.sceneObjects.push_back(&glassSphere);
 //	scene.sceneObjects.push_back(&shinySphere);
-	scene.sceneObjects.push_back(&globe);
+//	scene.sceneObjects.push_back(&globe);
 //	scene.sceneObjects.push_back(&plane);
 //	scene.sceneObjects.push_back(&cube);
-//	scene.sceneObjects.push_back(&bunny);
+		scene.sceneObjects.push_back(&bunny);
+//	scene.sceneObjects.push_back(&plainSphere);
 
 	scene.sceneLights.push_back(&light);
 
