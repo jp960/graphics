@@ -2,9 +2,11 @@
 #include "Sphere.h"
 
 
-Sphere::Sphere(Eigen::Vector3f _centre, int _radius) : SceneObject() {
+Sphere::Sphere(Eigen::Vector3f _centre, float _radius) : SceneObject() {
 	centre = _centre;
 	radius = _radius;
+
+	bs.setupBoundingSphere(radius*2, centre);
 }
 
 

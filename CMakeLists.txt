@@ -13,6 +13,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 set(SOURCE_FILES
         MiniAssignment4.cpp
+        BoundingSphere.h
         Camera.cpp
         Camera.h
         Intersection.cpp
@@ -33,7 +34,7 @@ set(SOURCE_FILES
         Sphere.h
         Material.cpp
         Material.h
-        )
+        BoundingSphere.cpp)
 
 add_executable(graphics ${SOURCE_FILES})
 target_link_libraries (graphics Eigen3::Eigen)

@@ -18,10 +18,11 @@ public:
 	Scene(int resH, int resW, float _ambientIntensity, Eigen::Vector3f _ambientColour);
 	~Scene();
 	std::vector<cv::Mat> setupScene(void);
-	bool getClosestObj(Ray ray, Intersection &closestPoint);
+	bool getClosestObj(Ray ray, Intersection &closestPoint, Intersection &closestBoundingSpherePoint, int depth);
 	Eigen::Vector3f rayTrace(Ray ray, int depth);
 	bool checkShadow(Intersection point, Light light);
 	Eigen::Vector3f reflect(Eigen::Vector3f ray, Intersection point);
 	Eigen::Vector3f refract(Eigen::Vector3f ray, Intersection point, float ri);
     void fresnel(const Eigen::Vector3f ray, Intersection point, float ri, float &kr, float &kt);
+    void getUVCoords(Intersection point, BoundingSphere boundingSphere, float &u, float &v);
 };

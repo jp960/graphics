@@ -38,19 +38,23 @@ std::vector<cv::Mat> Scene::setupScene() {
 	return channels;
 }
 
-bool Scene::getClosestObj(Ray ray, Intersection &closestPoint) {
+bool Scene::getClosestObj(Ray ray, Intersection &closestPoint, Intersection &closestBSPoint, int depth) {
 	float closest = FLT_MAX;
 	int closestObjIndex = -1;
 	float current_t;
 	Eigen::Vector3f test;
 	Intersection point;
+	Intersection bsPoint;
 	for (int obj_index = 0; obj_index < sceneObjects.size(); obj_index++) {
-		point = (sceneObjects.at(obj_index)->intersect(ray));
-		current_t = point.shortest_distance_t;
-		if (current_t > 0 && current_t < closest) {
-			closest = current_t;
-			closestObjIndex = obj_index;
-			closestPoint = point;
+		bsPoint = sceneObjects.at(obj_index)->bs.intersect(ray);
+		if ((bsPoint.shortest_distance_t > 0 && bsPoint.shortest_distance_t < closest) || depth > 0) {
+			point = (sceneObjects.at(obj_index)->intersect(ray));
+			current_t = point.shortest_distance_t;
+			if (current_t > 0 && current_t < closest) {
+				closest = current_t;
+				closestObjIndex = obj_index;
+				closestPoint = point;
+			}
 		}
 	}
 	if (closestObjIndex != -1) {
@@ -60,12 +64,15 @@ bool Scene::getClosestObj(Ray ray, Intersection &closestPoint) {
 	return false;
 }
 
+
 Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 	if (depth > MAX_DEPTH) {
 		return Eigen::Vector3f{ 0, 0, 0 };
 	}
 	Intersection point;
-	if (getClosestObj(ray, point)) {
+	Intersection boundSphereIntersectionPoint;
+
+	if (getClosestObj(ray, point, boundSphereIntersectionPoint, depth)) {
 		SceneObject* obj = sceneObjects.at(point.closestObjIndex);
 		Eigen::Vector3f objDiffuseColour(obj->material.kd);
 		Eigen::Vector3f objSpecularColour(obj->material.ks);
@@ -79,6 +86,13 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 		Eigen::Vector3f reflectionColour;
 
 		Eigen::Vector3f returnColour(0, 0, 0);
+
+//		if (obj->texture) {
+//			float u, v;
+//			getUVCoords(boundSphereIntersectionPoint, obj->bs, u, v);
+//			returnColour = obj->texture.getColourFromTexture(u, v);
+//		}
+
 		if (obj->material.type == 0){
 			for (auto &sceneLight : sceneLights) {
 				light = *sceneLight;
@@ -137,12 +151,11 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 	return Eigen::Vector3f{ 0, 0, 0 };
 }
 
-
 bool Scene::checkShadow(Intersection point, Light light) {
 	Intersection returnedPoint;
 	float closest = FLT_MAX;
 	float current_t;
-	
+
 	for (int obj_index = 0; obj_index < sceneObjects.size(); obj_index++) {
 		Ray shadowRay(point.intersectionPoint, (light.direction * -1));
 		returnedPoint = (sceneObjects.at(obj_index)->intersect(shadowRay));
@@ -207,4 +220,12 @@ void Scene::fresnel(const Eigen::Vector3f ray, Intersection point, float ri, flo
 
 	// As a consequence of the conservation of energy, transmittance is given by:
 	 kt = 1 - kr;
+}
+
+
+void getUVCoords(Intersection point, BoundingSphere boundingSphere, float &u, float &v) {
+	Eigen::Vector3f n(point.intersectionPoint - boundingSphere.centre);
+	n = n/n.norm();
+	u = atan2(n[0], n[2]) / (2*M_PI) + 0.5;
+	v = n[1] * 0.5 + 0.5;
 }
