@@ -88,11 +88,12 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 
 		Eigen::Vector3f returnColour(0, 0, 0);
 
-		if (obj->texture.flag) {
+		if (obj->texture.flag == 1) {
 			float u, v;
 			getUVCoords(boundSphereIntersectionPoint, obj->bs, u, v);
 			returnColour = obj->texture.getColourFromTexture(u, v);
 		}
+
 
 		if (obj->material.type == 0){
 			for (auto &sceneLight : sceneLights) {

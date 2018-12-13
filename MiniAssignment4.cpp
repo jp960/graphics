@@ -20,8 +20,8 @@ using namespace std;
 
 int main()
 {
-	int resH = 256;
-	int resW = 256;
+	int resH = 1024;
+	int resW = 1024;
 	Scene scene(resH, resW, 0.2f, Eigen::Vector3f{ 255, 255, 255 });
 	cv::Mat image;
 	Eigen::Vector3f lightVector(0.5f, -0.5f, 0.5f);
@@ -54,28 +54,39 @@ int main()
 
 	Texture globeTexture;
 	Texture noTexture;
+	Texture perlinTexture;
+	Texture marbleTexture;
+
 	noTexture.flag = 0;
 	globeTexture.flag = 1;
-	globeTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/earth.jpg");
+	perlinTexture.flag = 1;
+	marbleTexture.flag = 1;
 
-//	cv::namedWindow("texture", CV_WINDOW_AUTOSIZE);
-//	cv::imshow("texture", globeTexture.texture);
+	globeTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/earth.jpg");
+	perlinTexture.generatePerlinTexture("/home/janhavi/Documents/Final Year/graphics/perlin.png", 256, 256, 1, 5);
+	perlinTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/perlin.png");
+	marbleTexture.generateMarbleTexture("/home/janhavi/Documents/Final Year/graphics/marble.png", 256, 256, 1, 5);
+	marbleTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/marble.png");
+
+	cv::namedWindow("texture", CV_WINDOW_AUTOSIZE);
+	cv::imshow("texture", marbleTexture.texture);
 //	cvWaitKey(0);
 
 	glassSphere.setTexture(noTexture);
 	shinySphere.setTexture(noTexture);
-	globe.setTexture(globeTexture);
-	cube.setTexture(globeTexture);
 	plane.setTexture(globeTexture);
 	plainSphere.setTexture(noTexture);
-	bunny.setTexture(globeTexture);
+	bunny.setTexture(marbleTexture	);
+
+	globe.setTexture(marbleTexture);
+	cube.setTexture(perlinTexture);
 
 //	scene.sceneObjects.push_back(&glassSphere);
 //	scene.sceneObjects.push_back(&shinySphere);
-//	scene.sceneObjects.push_back(&globe);
+	scene.sceneObjects.push_back(&globe);
 //	scene.sceneObjects.push_back(&plane);
 //	scene.sceneObjects.push_back(&cube);
-		scene.sceneObjects.push_back(&bunny);
+//	scene.sceneObjects.push_back(&bunny);
 //	scene.sceneObjects.push_back(&plainSphere);
 
 	scene.sceneLights.push_back(&light);
@@ -84,6 +95,7 @@ int main()
 
 	Eigen::Vector3f pixel;
 	Eigen::Vector3f pixelColour;
+
 
 	for (int i = 0; i < resH; i++) {
 		for (int j = 0; j < resW; j++) {

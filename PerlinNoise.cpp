@@ -1,99 +1,160 @@
-//
-// Created by janhavi on 11/12/18.
-//
-
 #include <random>
+#include <iostream>
 #include "PerlinNoise.h"
 
+using namespace std;
 
 PerlinNoise::PerlinNoise() {
-    unsigned seed = 2016;
-    std::mt19937 generator(seed);
-    std::uniform_real_distribution distribution;
-    auto dice = std::bind(distribution, generator);
-    float gradientLen2;
-    for (unsigned i = 0; i < tableSize; ++i) {
-        do {
-            gradients[i] = Eigen::Vector3f(2 * (float)dice() - 1, 2 * (float)dice() - 1, 2 * (float)dice() - 1);
-            gradientLen2 = gradients[i].squaredNorm();
-        } while (gradientLen2 > 1);
-        gradients[i] /= sqrtf(gradientLen2); // normalize gradient
-        permutationTable[i] = i;
+}
+
+void PerlinNoise::setNoiseTable(int seed){
+    int perm[tableSize];
+
+    vector<int> permvec;
+    permvec.resize(256);
+    iota(permvec.begin(), permvec.end(), 0);
+    default_random_engine e(seed);
+    shuffle(permvec.begin(), permvec.end(), e);
+    permvec.insert(permvec.end(), permvec.begin(), permvec.end());
+
+//    *perm = &permvec[0];
+
+//    for (int i = 0; i < tableSize; i++) perm[i] = i;
+//
+//
+//// Random permutation the order
+//    for (int i = 0; i < tableSize; i++) {
+//        int j, t;
+//        j = rand() % (tableSize-i) + i;
+//        t = perm[j]; perm[j] = perm[i]; perm[i] = t; // Swap i and j
+//    }
+//
+    for(int x=0;x<512;x++) {
+        noiseTable[x] = permvec[x%256];
     }
 
-    std::uniform_int_distribution distributionInt;
-    auto diceInt = std::bind(distributionInt, generator);
-    // create permutation table
-    for (unsigned i = 0; i < tableSize; ++i) {
-        std::swap(permutationTable[i], permutationTable[diceInt() & tableSizeMask]);
+}
+
+float PerlinNoise::fade(float t) {
+    // Fade function as defined by Ken Perlin.  This eases coordinate values
+    // so that they will "ease" towards integral values.  This ends up smoothing
+    // the final output.
+    // 6t^5 - 15t^4 + 10t^3
+    return t*t*t*(t*(t*6-15)+10);
+}
+
+int PerlinNoise::increment(int num) {
+    num++;
+//    if (repeat > 0) num %= repeat;
+
+    return num;
+}
+
+float PerlinNoise::lerp(float a, float b, float x) {
+    return a + x * (b - a);
+}
+
+float PerlinNoise::perlin(Eigen::Vector3f in) {
+//    if(repeat > 0) {									// If we have any repeat on, change the coordinates to their "local" repetitions
+//        x = x%repeat;
+//        y = y%repeat;
+//        z = z%repeat;
+//    }
+    int xi = (int)in[0] & 255;								// Calculate the "unit cube" that the point asked will be located in
+    int yi = (int)in[1] & 255;								// The left bound is ( |_x_|,|_y_|,|_z_| ) and the right bound is that
+    int zi = (int)in[2] & 255;								// plus 1.  Next we calculate the location (from 0.0 to 1.0) in that cube.
+
+    float xf = in[0]-(int)in[0];								// We also fade the location to smooth the result.
+    float yf = in[1]-(int)in[1];
+    float zf = in[2]-(int)in[2];
+
+    float u = fade(xf);
+    float v = fade(yf);
+    float w = fade(zf);
+
+    int aaa, aba, aab, abb, baa, bba, bab, bbb;
+    aaa = noiseTable[noiseTable[noiseTable[xi]+yi]+ zi];
+    aba = noiseTable[noiseTable[noiseTable[xi]+increment(yi)]+zi];
+    aab = noiseTable[noiseTable[noiseTable[xi]+yi]+increment(zi)];
+    abb = noiseTable[noiseTable[noiseTable[xi]+increment(yi)]+increment(zi)];
+    baa = noiseTable[noiseTable[noiseTable[increment(xi)]+yi]+zi];
+    bba = noiseTable[noiseTable[noiseTable[increment(xi)]+increment(yi)]+zi];
+    bab = noiseTable[noiseTable[noiseTable[increment(xi)]+yi]+increment(zi)];
+    bbb = noiseTable[noiseTable[noiseTable[increment(xi)]+increment(yi)]+increment(zi)];
+
+    float x1, x2, y1, y2;
+    // The gradient function calculates the dot product between a pseudorandom
+    // gradient vector and the vector from the input coordinate to the 8
+    // surrounding points in its unit cube.
+    // This is all then lerped together as a sort of weighted average based on the faded (u,v,w)
+    // values we made earlier.
+    x1 = lerp(gradient(aaa,xf, yf, zf), gradient(baa, xf-1, yf  , zf), u);
+    x2 = lerp(gradient(aba,xf, yf, zf), gradient(bba, xf-1, yf-1, zf), u);
+    y1 = lerp(x1, x2, v);
+
+    x1 = lerp(gradient(aab,xf, yf, zf-1), gradient(bab, xf-1, yf  , zf-1), u);
+    x2 = lerp(gradient(abb,xf, yf, zf-1), gradient(bbb, xf-1, yf-1, zf-1), u);
+    y2 = lerp (x1, x2, v);
+
+
+    return (lerp (y1, y2, w)+1)/2;						// For convenience we bound it to 0 - 1 (theoretical min/max before is -1 - 1)
+}
+
+// Take the hashed value and take the first 4 bits of it (15 == 0b1111)
+// If the most significant bit (MSB) of the hash is 0 then set u = x.  Otherwise y.
+// In Ken Perlin's original implementation this was another conditional operator (?:).  I
+// If the first and second significant bits are 0 set v = y
+// If the first and second significant bits are 1 set v = x
+// If the first and second significant bits are not equal (0/1, 1/0) set v = z
+// Use the last 2 bits to decide if u and v are positive or negative.  Then return their addition.
+float PerlinNoise::gradient(int hash, float x, float y, float z) {
+    int h = hash & 15;
+    /*  8 = 0b1000 */
+    /* 4 = 0b0100 */
+    /* 12 = 0b1100 */
+    /* 14 = 0b1110*/
+    float u = h < 8 ? x : y;
+
+    float v;
+    if(h < 4) v = y;
+    else if(h == 12  || h == 14 ) v = x;
+    else v = z;
+    float g = ((h&1) == 0 ? u : -u)+((h&2) == 0 ? v : -v);
+    return g;
+}
+
+float PerlinNoise::octavePerlin(float x, float y, float z, int octaves, float persistence) {
+    float total = 0;
+    float frequency = 4;
+    float amplitude = 16;
+    float maxValue = 0;			// Used for normalizing result to 0.0 - 1.0
+
+    for(int i=0;i<octaves;i++) {
+        Eigen::Vector3f point = {x * frequency, y * frequency, z * frequency};
+        total += perlin(point) * amplitude;
+
+        maxValue += amplitude;
+
+        amplitude *= persistence;
+        frequency *= 2;
     }
-    // extend the permutation table in the index range [256:512]
-    for (unsigned i = 0; i < tableSize; ++i) {
-        permutationTable[tableSize + i] = permutationTable[i];
+//    cout << maxValue << endl;
+    return total/maxValue;
+}
+
+
+float PerlinNoise::turbulence(float x, float y, float z, float size)
+{
+    float value = 0.0f, initialSize = size;
+
+    while(size >= 1) {
+
+        value += perlin(Eigen::Vector3f {x / size, y / size, z / size}) * size;
+        size /= 2.0f;
     }
+
+    return( 128.0f * value / initialSize);
 }
 
-int PerlinNoise::hash(const int &x, const int &y, const int &z) { return permutationTable[permutationTable[permutationTable[x] + y] + z]; }
 
-float PerlinNoise::smoothstep(const float &t) {
-    return t * t * (3 - 2 * t);
-}
 
-float PerlinNoise::lerp(const float &lo, const float &hi, const float &t) {
-    return lo * (1 - t) + hi * t;
-}
-
-float PerlinNoise::eval(const Eigen::Vector3f &p) {
-    int xi0 = ((int)std::floor(p(0))) & tableSizeMask;
-    int yi0 = ((int)std::floor(p(1))) & tableSizeMask;
-    int zi0 = ((int)std::floor(p(2))) & tableSizeMask;
-
-    int xi1 = (xi0 + 1) & tableSizeMask;
-    int yi1 = (yi0 + 1) & tableSizeMask;
-    int zi1 = (zi0 + 1) & tableSizeMask;
-
-    float tx = p(0) - ((int)std::floor(p(0)));
-    float ty = p(1) - ((int)std::floor(p(1)));
-    float tz = p(2) - ((int)std::floor(p(2)));
-
-    float u = smoothstep(tx);
-    float v = smoothstep(ty);
-    float w = smoothstep(tz);
-
-    // gradients at the corner of the cell
-    const Eigen::Vector3f &c000 = gradients[hash(xi0, yi0, zi0)];
-    const Eigen::Vector3f &c100 = gradients[hash(xi1, yi0, zi0)];
-    const Eigen::Vector3f &c010 = gradients[hash(xi0, yi1, zi0)];
-    const Eigen::Vector3f &c110 = gradients[hash(xi1, yi1, zi0)];
-
-    const Eigen::Vector3f &c001 = gradients[hash(xi0, yi0, zi1)];
-    const Eigen::Vector3f &c101 = gradients[hash(xi1, yi0, zi1)];
-    const Eigen::Vector3f &c011 = gradients[hash(xi0, yi1, zi1)];
-    const Eigen::Vector3f &c111 = gradients[hash(xi1, yi1, zi1)];
-
-    // generate vectors going from the grid points to p
-    float x0 = tx, x1 = tx - 1;
-    float y0 = ty, y1 = ty - 1;
-    float z0 = tz, z1 = tz - 1;
-
-    Eigen::Vector3f p000 = Eigen::Vector3f(x0, y0, z0);
-    Eigen::Vector3f p100 = Eigen::Vector3f(x1, y0, z0);
-    Eigen::Vector3f p010 = Eigen::Vector3f(x0, y1, z0);
-    Eigen::Vector3f p110 = Eigen::Vector3f(x1, y1, z0);
-
-    Eigen::Vector3f p001 = Eigen::Vector3f(x0, y0, z1);
-    Eigen::Vector3f p101 = Eigen::Vector3f(x1, y0, z1);
-    Eigen::Vector3f p011 = Eigen::Vector3f(x0, y1, z1);
-    Eigen::Vector3f p111 = Eigen::Vector3f(x1, y1, z1);
-
-    // linear interpolation
-    float a = lerp(c000.dot(p000), c100.dot(p100), u);
-    float b = lerp(c010.dot(p010), c110.dot(p110), u);
-    float c = lerp(c001.dot(p001), c101.dot(p101), u);
-    float d = lerp(c011.dot(p011), c111.dot(p111), u);
-
-    float e = lerp(a, b, v);
-    float f = lerp(c, d, v);
-
-    return lerp(e, f, w); // g
-}

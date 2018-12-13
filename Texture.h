@@ -7,9 +7,12 @@ public:
     int flag;
     int width;
     int height;
+    int depth;
 
     Texture();
-    void generateTexture(int width, int height);
     void loadTexture(std::string _fileName);
     Eigen::Vector3f getColourFromTexture(float u, float v);
+    void generatePerlinTexture(std::string _fileName, int width, int height, int depth, int seed);
+    void generateMarbleTexture(std::string _fileName, int width, int height, int depth, int seed);
+    float turbulence();
 };

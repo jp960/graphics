@@ -3,13 +3,17 @@
 class PerlinNoise {
 public:
     static const unsigned tableSize = 256;
-    static const unsigned tableSizeMask = tableSize - 1;
-    Eigen::Vector3f gradients[tableSize];
-    unsigned permutationTable[tableSize * 2];
+    int permutationTable[tableSize];
+    int noiseTable[tableSize*2];
+    int seed;
 
     PerlinNoise();
-    int hash(const int &x, const int &y, const int &z);
-    float eval(const Eigen::Vector3f &p);
-    float smoothstep(const float &t);
-    float lerp(const float &lo, const float &hi, const float &t);
+    void setNoiseTable(int seed);
+    float fade(float t);
+    int increment(int num);
+    float lerp(float a, float b, float x);
+    float perlin(Eigen::Vector3f in);
+    float gradient(int hash,  float x, float y, float z);
+    float octavePerlin(float x, float y, float z, int octaves, float persistence);
+    float turbulence(float x, float y, float z, float size);
 };
