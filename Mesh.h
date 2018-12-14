@@ -1,8 +1,8 @@
 #pragma once
 #include <iostream>
+#include <string>
 #include <Eigen/Core>
 #include "SceneObject.h"
-#include <string>
 
 class Mesh : public SceneObject {
 public:

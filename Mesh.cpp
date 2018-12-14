@@ -23,6 +23,8 @@ void Mesh::loadMesh() {
 	t.translate(centre);
 	t.scale(scale);
 	v = apply_transform_to_list_of_vertices(v, t);
+
+	bs.setupBoundingSphere(v);
 }
 
 Eigen::MatrixXf Mesh::apply_transform_to_list_of_vertices(Eigen::MatrixXf input_v, const Eigen::Transform <float, 3, Eigen::Affine > & t) {

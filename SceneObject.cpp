@@ -13,5 +13,9 @@ void SceneObject::setMaterial(Material m) {
 	material = m;
 	material.kd = material.kd * 0.5f;
 	material.ks = material.ks * 0.5f;
-	material.type = material.type;
+	material.type = m.type;
+}
+
+void SceneObject::setTexture(Texture t) {
+	texture = t;
 }
