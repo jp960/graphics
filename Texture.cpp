@@ -1,4 +1,3 @@
-#define OPENCV_TRAITS_ENABLE_DEPRECATED
 #include <opencv2/imgcodecs.hpp>
 #include <Eigen/Core>
 #include <iostream>
@@ -30,7 +29,6 @@ float Texture::getMarbleTexture(float x, float y, float z){
     //turbPower = 0 ==> it becomes a normal sine pattern
     float turbPower = 4.0f; //makes twists
     float noise = pn.turbulence(fabs(x), fabs(y), fabs(z), 8);
-//    float noise = pn.turbulence(x, y, z, 16);
     float xyzValue = x* xPeriod / width + y * yPeriod / height + (turbPower * noise);
     float sineValue = fabs(sin(xyzValue * 2* 3.14f));
     return 255*sineValue;
@@ -51,14 +49,10 @@ void Texture::generatePerlinTexture(std::string _fileName, int _width, int _heig
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++) {
             for (int k = 0; k < depth; k++) {
-//                Eigen::Vector3f point = {(float) i/width, (float) j/height, (float) k/depth};
                 Eigen::Vector3f point = {(float)i, (float)j, (float)k};
 
                 float noise = pn.turbulence(point[0], point[1], point[2], 8)/256;
-//                float noise = pn.perlin(point);
                 float n;
-//                n= 20*noise;
-//                n = n - floor(n);
                 n = noise;
                 tt.at<cv::Vec3b>(cv::Point(i, j)) = n * val;
 
@@ -70,7 +64,6 @@ void Texture::generatePerlinTexture(std::string _fileName, int _width, int _heig
     cv::Mat out;
     cv::Mat flip;
     cv::flip(tt, flip, 1);
-//    hconcat(tt, flip, out);
     hconcat(tt, tt, out);
     cv::imwrite(_fileName, out);
 }
@@ -96,17 +89,10 @@ void Texture::generateMarbleTexture(std::string _fileName, int _width, int _heig
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++) {
             for (int k = 0; k < depth; k++) {
-//                Eigen::Vector3f point = {(float) i/width, (float) j/height, (float) k/depth};
                 Eigen::Vector3f point = {(float)i, (float)j, (float)k};
                 float noise = pn.turbulence(point[0], point[1], point[2], 64);
-//                float noise = pn.octavePerlin(point[0], point[1], point[2], 4, 0.5f );
-//                float xyValue = i* xPeriod / width + j * yPeriod / height + (turbPower * noise);
-//                float xyValue = point[0]* xPeriod / width + point[1] * yPeriod / height;
                 float xValue = point[0]* xPeriod / width + turbPower * noise;
-//                float xyValue = (point[0]* xPeriod /width)  + (point[1] * yPeriod /height);// + (turbPower * noise);
                 float xyValue = (point[0]* xPeriod /width)  + (point[1] * yPeriod /height) + (turbPower * noise)/256;
-//                float sineValue = fabs(sin((xValue  + (turbPower * noise))* 3.14159f));
-//                float sineValue = fabs(sin(((yPeriod*3.14)*point[1] + turbPower*noise)));
                 float sineValue = fabs(sin(2*xyValue* 3.14f));
 ;                tt.at<cv::Vec3b>(cv::Point(i, j)) = sineValue * val;
 
@@ -118,7 +104,6 @@ void Texture::generateMarbleTexture(std::string _fileName, int _width, int _heig
     cv::Mat out;
     cv::Mat flip;
     cv::flip(tt, flip, 1);
-//    hconcat(tt, flip, out);
     hconcat(tt, tt, out);
     cv::imwrite(_fileName, out);
 }

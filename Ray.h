@@ -1,3 +1,6 @@
+/***************************************************************************
+ * Ray class to hold the vector for the ray's start point and its direction.
+ */
 #pragma once
 #include <Eigen/Core>
 

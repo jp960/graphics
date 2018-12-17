@@ -1,3 +1,7 @@
+/***************************************************************************
+ * This class generates the Perlin Noise as a Matrix of colour weightings.
+ */
+#pragma once
 #include <Eigen/Core>
 
 class PerlinNoise {

@@ -17,18 +17,6 @@ void PerlinNoise::setNoiseTable(int seed){
     shuffle(permvec.begin(), permvec.end(), e);
     permvec.insert(permvec.end(), permvec.begin(), permvec.end());
 
-//    *perm = &permvec[0];
-
-//    for (int i = 0; i < tableSize; i++) perm[i] = i;
-//
-//
-//// Random permutation the order
-//    for (int i = 0; i < tableSize; i++) {
-//        int j, t;
-//        j = rand() % (tableSize-i) + i;
-//        t = perm[j]; perm[j] = perm[i]; perm[i] = t; // Swap i and j
-//    }
-//
     for(int x=0;x<512;x++) {
         noiseTable[x] = permvec[x%256];
     }
@@ -150,7 +138,6 @@ float PerlinNoise::turbulence(float x, float y, float z, float size)
     while(size >= 1) {
 
         value += smoothNoise(x/size, y/size) * size;
-//        value += perlin(Eigen::Vector3f {x / size, y / size, 1}) * size;
         size /= 2.0f;
     }
 

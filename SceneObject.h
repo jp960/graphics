@@ -1,3 +1,9 @@
+/***************************************************************************
+ * This is the parent class for all objects in the scene. It holds the
+ * Material, Texture and Bounding Sphere of that object. It has methods to
+ * set the Material and the Texture and a abstract intersect method to be
+ * implemented by the children scene objects like Mesh or Sphere.
+ */
 #pragma once
 #include <Eigen/Core>
 #include "Intersection.h"

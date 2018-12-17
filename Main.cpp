@@ -1,6 +1,10 @@
-// MiniAssignment4.cpp : Defines the entry point for the console application.
-//
-
+/***************************************************************************
+ * This class is the main entry point for the raytracer, it  sets the scene
+ * and adds the Light/s, Camera and SceneObjects. It calls the scene's
+ * raytrace method with a new ray per pixel. It also writes out the image
+ * to a PNG file.
+ *
+ */
 #include "math.h"
 #include <algorithm>
 #include <iostream>
@@ -34,9 +38,9 @@ int main()
 	Sphere shinySphere(Eigen::Vector3f{ -2, 1, 5 }, 1);
 	Sphere globe(Eigen::Vector3f{ 0, 0, 3 }, 1);
 	Sphere plainSphere(Eigen::Vector3f{ 0, 1, 4 }, 1);
-	Mesh plane("/home/donal/Documents/Graphics/Janhavi/Meshs/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1);
-	Mesh cube("/home/donal/Documents/Graphics/Janhavi/Meshs/cube-tri.obj", Eigen::Vector3f{ 2, 1, 8 }, 1);
-	Mesh bunny("/home/donal/Documents/Graphics/Janhavi/Meshs/bunny2.obj", Eigen::Vector3f{ 0, 0, 3 }, 10);
+    Mesh plane("/home/janhavi/Documents/Final Year/graphics/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1);
+    Mesh cube("/home/janhavi/Documents/Final Year/graphics/cube-tri.obj", Eigen::Vector3f{ 2, 1, 8 }, 1);
+    Mesh bunny("/home/janhavi/Documents/Final Year/graphics/bunny.obj", Eigen::Vector3f{ 0, 0, 3 }, 10);
 
 	Material shinySpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 1.0f, 1);
 	Material glassSpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 1.0f, 2);
@@ -62,15 +66,16 @@ int main()
 	perlinTexture.flag = 1;
 	marbleTexture.flag = 1;
 
-//	globeTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/earth.jpg");
-	perlinTexture.generatePerlinTexture("/home/donal/Documents/Graphics/Janhavi/Meshs/perlin.png", 256, 256, 1, 5);
-	perlinTexture.loadTexture("/home/donal/Documents/Graphics/Janhavi/Meshs/perlin.png");
-	marbleTexture.generateMarbleTexture("/home/donal/Documents/Graphics/Janhavi/Meshs/marble.png", 512, 512, 1, 1);
-	marbleTexture.loadTexture("/home/donal/Documents/Graphics/Janhavi/Meshs/marble.png");
+	cv::Mat emptyTexture(256, 256, CV_64F, 0.0);
+	noTexture.texture =emptyTexture;
+	noTexture.width = 256;
+	noTexture.width = 256;
 
-//	cv::namedWindow("texture", CV_WINDOW_AUTOSIZE);
-//	cv::imshow("texture", marbleTexture.texture);
-//	cvWaitKey(0);
+//	globeTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/earth.jpg");
+	perlinTexture.generatePerlinTexture("/home/janhavi/Documents/Final Year/graphics/perlin.png", 256, 256, 1, 5);
+	perlinTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/perlin.png");
+	marbleTexture.generateMarbleTexture("/home/janhavi/Documents/Final Year/graphics/marble.png", 512, 512, 1, 1);
+	marbleTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/marble.png");
 
 	glassSphere.setTexture(noTexture);
 	shinySphere.setTexture(noTexture);

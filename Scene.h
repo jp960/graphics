@@ -1,3 +1,10 @@
+/***************************************************************************
+ * Scene class holds a list of lights and SceneObjects alsongside the
+ * scene dimensions and the max recursion depth. Implements methods for
+ * raytracing, finding the next closest object in the scene, checking for
+ * shadows, getting the refection and refraction vectors, the fresnel
+ * calculations and getting the uv coords for a given pixel
+ */
 #pragma once
 #include <vector>
 #include "opencv2/opencv.hpp"

@@ -1,3 +1,8 @@
+/***************************************************************************
+ * Sphere class that is the child of SceneObject class. Positions sphere in
+ * the scene according to centre and radius parameters.  Implements
+ * intersect method.
+ */
 #pragma once
 #include <iostream>
 #include <Eigen/Core>

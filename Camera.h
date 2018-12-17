@@ -1,3 +1,8 @@
+/***************************************************************************
+ * This class holds the Cmaera information, including the focal point and
+ * direction vectors. The method in this class translates a pixel coordinate
+ * into a world coordinate.
+ */
 #pragma once
 #include <Eigen/Core>
 

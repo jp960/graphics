@@ -1,3 +1,8 @@
+/***************************************************************************
+ * Bounding Sphere class has methods to generate a bounding sphere for a
+ * Mesh or a Sphere and has the intersection method.
+ */
+
 #include <Eigen/Core>
 #include "Intersection.h"
 #include "Ray.h"

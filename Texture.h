@@ -1,3 +1,10 @@
+/***************************************************************************
+ *  This class holds the Texture information for a SceneObject. This is the
+ *  mat contiaining the texture itself, a flag to state if said object has
+ *  a texture and the dimensions of the texture, It also has methods to
+ *  load and generate different textures.
+ */
+#pragma once
 #include <opencv2/core/mat.hpp>
 #include <Eigen/src/Core/Matrix.h>
 

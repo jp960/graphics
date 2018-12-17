@@ -1,3 +1,8 @@
+/***************************************************************************
+ * Mesh class that is the child of SceneObject class. Loads obj from file.
+ * Positions mesh in the scene according to scale and centre parameters.
+ * Implements intersect method.
+ */
 #pragma once
 #include <iostream>
 #include <string>

@@ -1,3 +1,8 @@
+/***************************************************************************
+ * Intersection class stores the shortest distance travelled (t) when
+ * a ray hits an object, the coordinates of that point, its normal and the
+ * index of the closest object for the Scene class.
+ */
 #pragma once
 #include <Eigen/Core>
 
