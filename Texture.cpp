@@ -13,6 +13,7 @@ void Texture::loadTexture(std::string _fileName) {
     texture = cv::imread(_fileName);
     width = texture.cols;
     height = texture.rows;
+
 }
 
 Eigen::Vector3f Texture::getColourFromTexture(float u, float v) {

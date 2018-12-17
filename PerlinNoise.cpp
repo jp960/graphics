@@ -16,19 +16,6 @@ void PerlinNoise::setNoiseTable(int seed){
     default_random_engine e(seed);
     shuffle(permvec.begin(), permvec.end(), e);
     permvec.insert(permvec.end(), permvec.begin(), permvec.end());
-
-//    *perm = &permvec[0];
-
-//    for (int i = 0; i < tableSize; i++) perm[i] = i;
-//
-//
-//// Random permutation the order
-//    for (int i = 0; i < tableSize; i++) {
-//        int j, t;
-//        j = rand() % (tableSize-i) + i;
-//        t = perm[j]; perm[j] = perm[i]; perm[i] = t; // Swap i and j
-//    }
-//
     for(int x=0;x<512;x++) {
         noiseTable[x] = permvec[x%256];
     }

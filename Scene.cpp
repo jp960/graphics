@@ -88,16 +88,10 @@ Eigen::Vector3f Scene::rayTrace(Ray ray, int depth) {
 
 		Eigen::Vector3f returnColour(0, 0, 0);
 
-		if (obj->texture.flag == 1) {
-			float u, v;
-			getUVCoords(boundSphereIntersectionPoint, obj->bs, u, v);
-			returnColour = obj->texture.getColourFromTexture(u, v);
-//			float colour = obj->texture.getMarbleTexture(point.intersectionPoint[0], point.intersectionPoint[1], point.intersectionPoint[2]);
-//			returnColour[0]+=colour;
-//			returnColour[1]+=colour;
-//			returnColour[2]+=colour;
+        float u, v;
+        getUVCoords(boundSphereIntersectionPoint, obj->bs, u, v);
+        returnColour = obj->texture.getColourFromTexture(u, v);
 
-		}
 
 
 		if (obj->material.type == 0){
