@@ -1,15 +1,17 @@
 #include <iostream>
 #include <Eigen/Geometry>
+#include <Eigen/Dense>
 #include <igl/readOBJ.h>
 #include <cfloat>
 #include "Mesh.h"
 
 using namespace std;
 
-Mesh::Mesh(std::string _fileName, Eigen::Vector3f _centre, float _scale) : SceneObject() {
+Mesh::Mesh(std::string _fileName, Eigen::Vector3f _centre, Eigen::Vector3f _rotate, float _scale) : SceneObject() {
 	fileName = _fileName;
 	centre = _centre;
 	scale = _scale;
+	rotate = _rotate;
 	loadMesh();
 }
 
@@ -22,6 +24,9 @@ void Mesh::loadMesh() {
 	Eigen::Transform <float, 3, Eigen::Affine > t = Eigen::Transform <float, 3, Eigen::Affine >::Identity();
 	t.translate(centre);
 	t.scale(scale);
+	t.rotate(Eigen::AngleAxis<float>(rotate[0], Eigen::Vector3f::UnitX()));
+	t.rotate(Eigen::AngleAxis<float>(rotate[1], Eigen::Vector3f::UnitY()));
+	t.rotate(Eigen::AngleAxis<float>(rotate[2], Eigen::Vector3f::UnitZ()));
 	v = apply_transform_to_list_of_vertices(v, t);
 
 	bs.setupBoundingSphere(v);
