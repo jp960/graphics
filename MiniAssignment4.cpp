@@ -46,10 +46,11 @@ void thread_method(int thread_id, int numRows, int resW, std::vector<cv::Mat> *s
     cout << "Thread " << thread_id << " finished" << endl;
 
 }
+
 int main()
 {
-	int resH = 1080;
-	int resW = 1920;
+	int resH = 256;
+	int resW = 256;
 	Scene scene(resH, resW, 0.2f, Eigen::Vector3f{ 255, 255, 255 });
 	cv::Mat image1;
 	cv::Mat image2;
@@ -57,9 +58,6 @@ int main()
     int numThreads = thread::hardware_concurrency();
     int numRows = resH/numThreads;
     thread threads[numThreads];
-
-
-
 
 	lightVector = (lightVector / lightVector.norm());
 	Light light(lightVector, 0.4f, Eigen::Vector3f{ 255, 255, 255 });
@@ -70,15 +68,12 @@ int main()
 	Sphere globe(Eigen::Vector3f{ 3, 0, 4 }, 1);
 	Sphere plainSphere(Eigen::Vector3f{ 0, -3 , 4 }, 1);
 	Sphere perlinSphere(Eigen::Vector3f{ -3, 0 , 4 }, 1);
-    Sphere marbleSphere(Eigen::Vector3f{ 0, 3 , 4 }, 1);
+    Sphere marbleSphere(Eigen::Vector3f{ 0, 1 , 4 }, 1);
 
-    Mesh plane("/home/donal/Documents/Graphics/Janhavi/Meshs/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1);
-	Mesh cube("/home/donal/Documents/Graphics/Janhavi/Meshs/cube-tri.obj", Eigen::Vector3f{ 0, 0, 8 }, 1);
-	Mesh bunny("/home/donal/Documents/Graphics/Janhavi/Meshs/bunny2.obj", Eigen::Vector3f{ 0, 0, 3 }, 15);
-    Mesh cube1("/home/donal/Documents/Graphics/Janhavi/Meshs/cube-tri.obj", Eigen::Vector3f{ -2, 2, 8 }, 1);
-    Mesh cube2("/home/donal/Documents/Graphics/Janhavi/Meshs/cube-tri.obj", Eigen::Vector3f{ 2, -2, 8 }, 1);
-    Mesh cube3("/home/donal/Documents/Graphics/Janhavi/Meshs/cube-tri.obj", Eigen::Vector3f{ -2, -2, 8 }, 1);
-    Mesh cube4("/home/donal/Documents/Graphics/Janhavi/Meshs/cube-tri.obj", Eigen::Vector3f{ 2, 2, 8 }, 1);
+//    Mesh plane("/home/janhavi/Documents/Final Year/graphics/plane.obj", Eigen::Vector3f{ 0, 0, 0 }, 1);
+	Mesh cube("/home/janhavi/Documents/Final Year/graphics/cube-tri.obj", Eigen::Vector3f{ 0, 0, 8 }, Eigen::Vector3f{ 0, 0.785398, 0 }, 1);
+//	Mesh bunny("/home/janhavi/Documents/Final Year/graphics/bunny.obj", Eigen::Vector3f{ -1, -1, 3 }, Eigen::Vector3f{ (float)(M_PI*2 - 0.5), (float)M_PI, 0 }, 15);
+	Mesh bunny("/home/janhavi/Documents/Final Year/graphics/bunny.obj", Eigen::Vector3f{ 0, -1, 3 }, Eigen::Vector3f{ (float)(M_PI*2 - 0.3), (float)M_PI, 0 }, 15);
 
     Material shinySpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 231, 47, 99 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 1.0f, 1);
 	Material glassSpherem(Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, Eigen::Vector3f{ 255, 255, 255 }, 1.0f, 1.0f, 2);
@@ -89,16 +84,14 @@ int main()
 	shinySphere.setMaterial(shinySpherem);
 	glassSphere.setMaterial(glassSpherem);
 	globe.setMaterial(simplem);
-	plane.setMaterial(shinySpherem);
-	cube.setMaterial(simplem);
-	cube1.setMaterial(simplem);
-	cube2.setMaterial(simplem);
-	cube3.setMaterial(simplem);
-	cube4.setMaterial(simplem);
 	plainSphere.setMaterial(simplem);
 	perlinSphere.setMaterial(simplem);
+	marbleSphere.setMaterial(simplem);
+
+	cube.setMaterial(simplem);
 	bunny.setMaterial(simplem);
-    marbleSphere.setMaterial(simplem);
+//	plane.setMaterial(shinySpherem);
+
 	Texture globeTexture;
 	Texture noTexture;
 	Texture perlinTexture;
@@ -109,52 +102,41 @@ int main()
 	perlinTexture.flag = 1;
 	marbleTexture.flag = 1;
 
-
-
     cv::Mat emptyTexture(256, 256, CV_64F, 0.0);
-    noTexture.texture =emptyTexture;
+    noTexture.texture = emptyTexture;
     noTexture.width = 256;
     noTexture.width = 256;
 
-
-
-	globeTexture.loadTexture("/home/donal/Documents/Graphics/Janhavi/Meshs/earth.jpg");
-	perlinTexture.generatePerlinTexture("/home/donal/Documents/Graphics/Janhavi/Meshs/perlin.png", 256, 256, 1, 5);
-	perlinTexture.loadTexture("/home/donal/Documents/Graphics/Janhavi/Meshs/perlin.png");
-	marbleTexture.generateMarbleTexture("/home/donal/Documents/Graphics/Janhavi/Meshs/marble.png", 512, 512, 1, 1);
-	marbleTexture.loadTexture("/home/donal/Documents/Graphics/Janhavi/Meshs/marble.png");
+	globeTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/earth.jpg");
+	perlinTexture.generatePerlinTexture("/home/janhavi/Documents/Final Year/graphics/perlin.png", 256, 256, 1, 5);
+	perlinTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/perlin.png");
+//	marbleTexture.generateMarbleTexture("/home/janhavi/Documents/Final Year/graphics/marble.png", 512, 512, 1, 1);
+	marbleTexture.loadTexture("/home/janhavi/Documents/Final Year/graphics/marble.png");
 
 //	cv::namedWindow("texture", CV_WINDOW_AUTOSIZE);
 //	cv::imshow("texture", marbleTexture.texture);
 //	cvWaitKey(0);
-    marbleSphere.setTexture(marbleTexture);
-	glassSphere.setTexture(noTexture);
+
 	shinySphere.setTexture(noTexture);
-	plane.setTexture(globeTexture);
+	glassSphere.setTexture(noTexture);
 	globe.setTexture(globeTexture);
 	plainSphere.setTexture(noTexture);
 	perlinSphere.setTexture(perlinTexture);
+	marbleSphere.setTexture(marbleTexture);
+
+	cube.setTexture(noTexture);
+//	plane.setTexture(globeTexture);
 	bunny.setTexture(marbleTexture);
 
 	globe.setTexture(globeTexture);
-	cube1.setTexture(globeTexture);
-	cube2.setTexture(perlinTexture);
-	cube3.setTexture(marbleTexture);
-	cube4.setTexture(noTexture);
 
-
-
-    scene.sceneObjects.push_back(&glassSphere);
-	scene.sceneObjects.push_back(&shinySphere);
-	scene.sceneObjects.push_back(&plainSphere);
-	scene.sceneObjects.push_back(&perlinSphere);
-	scene.sceneObjects.push_back(&marbleSphere);
-	scene.sceneObjects.push_back(&globe);
+//	scene.sceneObjects.push_back(&shinySphere);
+//	scene.sceneObjects.push_back(&glassSphere);
+//	scene.sceneObjects.push_back(&globe);
+//	scene.sceneObjects.push_back(&plainSphere);
+//	scene.sceneObjects.push_back(&perlinSphere);
+//	scene.sceneObjects.push_back(&marbleSphere);
 //	scene.sceneObjects.push_back(&cube);
-	scene.sceneObjects.push_back(&cube1);
-	scene.sceneObjects.push_back(&cube2);
-	scene.sceneObjects.push_back(&cube3);
-	scene.sceneObjects.push_back(&cube4);
 	scene.sceneObjects.push_back(&bunny);
 //	scene.sceneObjects.push_back(&plane);
 

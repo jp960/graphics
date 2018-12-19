@@ -12,9 +12,10 @@ public:
 	Eigen::MatrixXi f;
 	std::string fileName;
 	Eigen::Vector3f centre;
+    Eigen::Vector3f rotate;
 	float scale;
 
-	Mesh(std::string fileName, Eigen::Vector3f centre, float scale);
+    Mesh(std::string fileName, Eigen::Vector3f centre, Eigen::Vector3f rotate, float scale);
 	~Mesh();
 	Intersection intersect(Ray ray);
 private:

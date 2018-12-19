@@ -89,10 +89,10 @@ void Texture::generateMarbleTexture(std::string _fileName, int _width, int _heig
     cv::Vec3b val = {255,255, 255};
 
 
-    float xPeriod = 10.0f; //defines repetition of marble lines in x direction
-    float yPeriod = 15.0f; //defines repetition of marble lines in y direction
+    float xPeriod = 1.0f; //defines repetition of marble lines in x direction
+    float yPeriod = 1.0f; //defines repetition of marble lines in y direction
     //turbPower = 0 ==> it becoms a normal sine pattern
-    float turbPower = 5.0f; //makes twists
+    float turbPower = 1.0f; //makes twists
 
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++) {
@@ -115,11 +115,20 @@ void Texture::generateMarbleTexture(std::string _fileName, int _width, int _heig
         }
     }
 
-    texture = tt;
-    cv::Mat out;
-    cv::Mat flip;
-    cv::flip(tt, flip, 1);
+//    texture = tt;
+//    cv::Mat out;
+//    cv::Mat flip;
+//    cv::flip(tt, flip, 1);
 //    hconcat(tt, flip, out);
-    hconcat(tt, tt, out);
+//    hconcat(tt, tt, out);
+//    cv::imwrite(_fileName, out);
+
+    cv::Mat leftHalf = tt(cv::Rect(0, 0, width/2, height));
+    cv::Mat rightHalf = tt(cv::Rect(width/2, 0, width/2, height));
+    cv::Mat out1;
+    cv::Mat out;
+
+    hconcat(leftHalf, tt, out1);
+    hconcat(out1, rightHalf, out);
     cv::imwrite(_fileName, out);
 }
